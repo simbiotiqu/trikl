@@ -76,7 +76,7 @@ to their current bounding box, so long strings don't wrap. You can use newlines
 to use multiple lines.
 
 ``` clojure
-(t/render client "hello, world!\nWhat a lovely day we're having")
+(t/render (last @clients) "hello, world!\nWhat a lovely day we're having")
 ```
 
 ### Sequence
@@ -85,7 +85,7 @@ A seq (so the result of calling `list`, `map`, `for`, etc. Not vectors!) will
 simply render each item in the list.
 
 ``` clojure
-(t/render client (repeat 20 "la"))
+(t/render (last @clients) (repeat 20 "la"))
 ```
 
 ### Elements
@@ -103,7 +103,7 @@ are specified using RGB (red-green-blue) values. Each value can go from 0 to
 255.
 
 ``` clojure
-(t/render client [:span {:styles {:fg [100 200 0] :bg [50 50 200]}} "Oh my!"])
+(t/render (last @clients) [:span {:styles {:fg [100 200 0] :bg [50 50 200]}} "Oh my!"])
 ```
 
 #### :box
@@ -123,7 +123,7 @@ Note for instance that this example truncates the string to "Hello,", because it
 doesn't fit in the box.
 
 ``` clojure
-(t/render client [:box {:x 20 :y 10, :width 7, :height 3} "Hello, world!"])
+(t/render (last @clients) [:box {:x 20 :y 10, :width 7, :height 3} "Hello, world!"])
 ```
 
 #### :line-box
@@ -138,7 +138,7 @@ sequence containing the characters to use, starting from the top left corner and
 moving clockwise. The default value for `:lines` is ` "╭─╮│╯─╰│"`
 
 ``` clojure
-(t/render client [:line-box {:x 20 :y 10, :width 10, :height 3} "Hello, world!"])
+(t/render (last @clients) [:line-box {:x 20 :y 10, :width 10, :height 3} "Hello, world!"])
 ```
 
 #### :cols and :rows
@@ -174,7 +174,7 @@ return any of the above renderable things from the function.
    [:line-box "Hiiiiii"]
    [:line-box {:height 15 :styles {:bg [100 50 50]}}]])
 
-(t/render client [app])
+(t/render (last @clients) [app])
 ```
 
 ## App state
@@ -185,7 +185,7 @@ automatically re-render when the atom changes.
 ``` clojure
 (def app-state (atom {:pos [10 10]}))
 
-(t/render-watch! client
+(t/render-watch! (last @clients)
                  (fn [{[x y] :pos} _]
                    [:box {:x x :y y} "X"])
                  app-state)
@@ -258,13 +258,15 @@ You can try this snippet, if you see nice continuous gradients from blue to
 purple then you're all set.
 
 ``` clojure
-(defn app [_]
+(defn app [_ _]
   [:box
    (for [y (range 50)]
      [:span
       (for [x (range 80)]
         [:span {:styles {:bg [(* x 2) (* y 2) (+ x (* 4 y))]}} " "])
       "\n"])])
+
+(t/render (last @clients) [app])
 ```
 
 iTerm and gnome-terminal should both be fine, but if you're using Tmux and you're not getting the desired results, then add this to your `~/.tmux.conf`
