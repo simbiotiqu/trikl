@@ -3,3 +3,5 @@
 target
 repl
 scratch.clj
+.clj-kondo
+.lsp
